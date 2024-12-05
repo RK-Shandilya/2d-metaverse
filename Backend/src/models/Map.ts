@@ -22,5 +22,5 @@ const mapSchema = new mongoose.Schema({
     }]
 })
 
-const Map = mongoose.model("Map", mapSchema);
-export default Map;
+const mapModel = mongoose.model("Map", mapSchema);
+export default mapModel;

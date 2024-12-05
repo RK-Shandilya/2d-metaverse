@@ -85,7 +85,7 @@ describe("User Update metadata Endpoint", ()=>{
             username,
             password
         })
-        token = response.body.token;
+        token = response.data.token;
 
         const avatarResponse = await axios.post(`${BACKEND_URL}/api/v1/admin/createAvatr`, {
             imageUrl : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
@@ -96,7 +96,7 @@ describe("User Update metadata Endpoint", ()=>{
             }
         })
 
-        avatarId = avatarResponse.body.avatarId;
+        avatarId = avatarResponse.data.avatarId;
     })
 
     test("User can't update their metadata with a wrong avatar id", async()=> {
@@ -131,3 +131,49 @@ describe("User Update metadata Endpoint", ()=>{
     })
 })
 
+describe("User avatar Information", ()=> {
+    let token;
+    let userId;
+    let avatarId;
+
+    beforeAll(async ()=>{
+        const username = "Rudra" + Math.random();
+        const password = 123456;
+        const signupResopnse = await axios.post(`${BACKEND_URL}/api/v1/signup`,{
+            username,
+            password,
+            role: 'admin'
+        })
+        userId = signupResopnse.data.userId;
+
+        const response = await axios.post(`${BACKEND_URL}/api/v1/signin`,{
+            username,
+            password
+        })
+        token = response.data.token;
+
+        const avatarResponse = await axios.post(`${BACKEND_URL}/api/v1/admin/createAvatr`, {
+            imageUrl : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
+            name: 'Paaji'
+        },{
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        })
+
+        avatarId = avatarResponse.data.avatarId;
+    })
+
+    test("get the avatar information of a user", async()=> {
+        const response = await axios.get(`${BACKEND_URL}/api/v1/user/metadata/bulk?ids=[${userId}]`);
+        expect(response.data.avatars.length).toBe(1);
+        expect(response.data.avatars[0].userId).toBe(userId);
+    })
+
+    test("Available avatars lists", async()=>{
+        const response = axios.get(`${BACKEND_URL}/api/v1/user/availableAvatars`);
+        expect((await response).data.avatars.length).not.toBe(0);
+        const currentAvatar = response.data.avatars.find((avatar)=> avatar.id === avatarId);
+        expect(currentAvatar).toBeDefined;
+    })
+})
