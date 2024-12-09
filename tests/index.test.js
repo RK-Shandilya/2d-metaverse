@@ -107,84 +107,84 @@ describe("Auth", () => {
   });
 });
 
-// describe("User Update metadata Endpoint", () => {
-//   let token = null;
-//   let avatarId = "";
+describe("User Update metadata Endpoint", () => {
+  let token = null;
+  let avatarId = "";
 
-//   beforeAll(async () => {
-//     const username = "Rudra" + Math.random();
-//     const password = 123456;
-//     await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-//       username,
-//       password,
-//       role: "admin",
-//     });
+  beforeAll(async () => {
+    const username = "Rudra" + Math.random() + "@gmail.com";
+    const password = "12345678";
+    await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+      username,
+      password,
+      role: "admin",
+    });
 
-//     const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-//       username,
-//       password,
-//     });
-//     token = response.data.token;
+    const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
+      username,
+      password,
+    });
+    token = response.data.token;
 
-//     const avatarResponse = await axios.post(
-//       `${BACKEND_URL}/api/v1/admin/createAvatr`,
-//       {
-//         imageUrl:
-//           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
-//         name: "Paaji",
-//       },
-//       {
-//         headers: {
-//           authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
+    const avatarResponse = await axios.post(
+      `${BACKEND_URL}/api/v1/admin/createAvatr`,
+      {
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
+        name: "Paaji",
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-//     avatarId = avatarResponse.data.avatarId;
-//   });
+    avatarId = avatarResponse.data.avatarId;
+  });
 
-//   test("User can't update their metadata with a wrong avatar id", async () => {
-//     const response = await axios.post(
-//       `${BACKEND_URL}/api/v1/updateUserMetadata`,
-//       {
-//         avatarId: 1234555,
-//       },
-//       {
-//         headers: {
-//           authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-//     expect(response.status).toBe(400);
-//   });
+  test("User can't update their metadata with a wrong avatar id", async () => {
+    const response = await axios.post(
+      `${BACKEND_URL}/api/v1/updateUserMetadata`,
+      {
+        avatarId: 1234555,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    expect(response.status).toBe(400);
+  });
 
-//   test("User can update their metadata with the right avatar id", async () => {
-//     const response = await axios.post(
-//       `${BACKEND_URL}/api/v1/updateUserMetadata`,
-//       {
-//         avatarId,
-//       },
-//       {
-//         headers: {
-//           authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
+  test("User can update their metadata with the right avatar id", async () => {
+    const response = await axios.post(
+      `${BACKEND_URL}/api/v1/updateUserMetadata`,
+      {
+        avatarId,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-//     expect(response.status).toBe(200);
-//   });
+    expect(response.status).toBe(200);
+  });
 
-//   test("User is not able to update their metadata if the auth header is not present", async () => {
-//     const response = await axios.post(
-//       `${BACKEND_URL}/api/v1/updateUserMetadata`,
-//       {
-//         avatarId,
-//       }
-//     );
+  test("User is not able to update their metadata if the auth header is not present", async () => {
+    const response = await axios.post(
+      `${BACKEND_URL}/api/v1/updateUserMetadata`,
+      {
+        avatarId,
+      }
+    );
 
-//     expect(response.status).toBe(403);
-//   });
-// });
+    expect(response.status).toBe(403);
+  });
+});
 
 // describe("User avatar Information", () => {
 //   let token;
@@ -192,8 +192,8 @@ describe("Auth", () => {
 //   let avatarId;
 
 //   beforeAll(async () => {
-//     const username = "Rudra" + Math.random();
-//     const password = 123456;
+//     const username = "Rudra" + Math.random() + "@gmail.com";
+//     const password = "12345678";
 //     const signupResopnse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
 //       username,
 //       password,
@@ -234,7 +234,7 @@ describe("Auth", () => {
 
 //   test("Available avatars lists", async () => {
 //     const response = axios.get(`${BACKEND_URL}/api/v1/user/availableAvatars`);
-//     expect((await response).data.avatars.length).not.toBe(0);
+//     expect(response.data.avatars.length).not.toBe(0);
 //     const currentAvatar = response.data.avatars.find(
 //       (avatar) => avatar.id === avatarId
 //     );
@@ -252,8 +252,8 @@ describe("Auth", () => {
 //   let element2Id;
 
 //   beforeAll(async () => {
-//     const username = "Rudra" + Math.random();
-//     const password = 123456;
+//     const username = "Rudra" + Math.random() + "@gmail.com";
+//     const password = "12345678";
 //     const adminSignupResopnse = await axios.post(
 //       `${BACKEND_URL}/api/v1/signup`,
 //       {
@@ -524,8 +524,8 @@ describe("Auth", () => {
 //   let spaceId;
 
 //   beforeAll(async () => {
-//     const username = "Rudra" + Math.random();
-//     const password = 123456;
+//     const username = "Rudra" + Math.random()+ "@gmail.com";
+//     const password = "12345678";
 //     const adminSignupResopnse = await axios.post(
 //       `${BACKEND_URL}/api/v1/signup`,
 //       {
@@ -757,7 +757,7 @@ describe("Auth", () => {
 
 //     beforeAll(async () => {
 //         const username = `Rudra-${Math.random()}`
-//         const password = "123456"
+//         const password = "12345678"
 
 //         const signupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
 //             username,
@@ -935,7 +935,7 @@ describe("Auth", () => {
 
 //     async function setupHTTP() {
 //         const username = `kirat-${Math.random()}`
-//         const password = "123456"
+//         const password = "12345678"
 //         const adminSignupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
 //             username,
 //             password,
