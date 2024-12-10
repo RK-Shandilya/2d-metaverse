@@ -27,7 +27,7 @@ model Space {
   id        String  @id @unique @default(cuid())
   name      String
   width     Int
-  height    Int?
+  height    Int
   thumbnail String?
   elements   SpaceElements[] 
   creatorId   String  
@@ -49,6 +49,7 @@ model Element {
   width         Int
   height        Int
   imageUrl      String
+  static        Boolean
   mapElements   MapElements[]
   spaces        SpaceElements[]
 }
@@ -57,6 +58,7 @@ model Map {
   id                String  @id @unique @default(cuid())
   width             Int
   height            Int
+  thumbnail         String
   name              String
   mapElements       MapElements[]
 }

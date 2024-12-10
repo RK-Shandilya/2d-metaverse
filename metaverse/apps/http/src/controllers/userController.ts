@@ -173,3 +173,48 @@ export const getDiffUserMetadata = async(req: Request, res: Response) => {
         })
     }
 }
+
+export const getAllElement = async (req: Request, res: Response) => {
+    try {
+        const elements = await client.element.findMany()
+
+        res.status(200).json({
+            success: true,
+            message: "Elements Fetched Successfully",
+            elements: elements.map((e: any) => ({
+                id: e.id,
+                imageUrl: e.imageUrl,
+                width: e.width,
+                height: e.height,
+                static: e.static
+            }))
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
+    }
+    
+}
+
+export const getAllAvatar = async (req: Request, res: Response) => {
+    try {
+        const avatars = await client.avatar.findMany()
+
+        res.status(200).json({
+            success: true,
+            message: "Avatar fetched Successfully",
+            avatars: avatars.map((e: any) => ({
+                id: e.id,
+                imageUrl: e.imageUrl,
+                name: e.name
+            }))
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
+    }
+}

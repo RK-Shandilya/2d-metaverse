@@ -1,13 +1,15 @@
 import { Router } from "express";
 import { createAvatar, createElement, createMap, updateElement } from "../../controllers/adminController";
+import { adminMiddleware } from "../../middleware/admin";
 
 export const adminRouter = Router();
+adminRouter.use(adminMiddleware)
 
 adminRouter.post('/element', createElement)
 
-adminRouter.post('/element/:elementId', updateElement)
+adminRouter.put('/element/:elementId', updateElement)
 
-adminRouter.get('/avatar', createAvatar)
+adminRouter.post('/avatar', createAvatar)
 
-adminRouter.get('/map', createMap)
+adminRouter.post('/map', createMap)
 
