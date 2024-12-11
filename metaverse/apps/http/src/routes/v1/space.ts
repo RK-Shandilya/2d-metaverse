@@ -5,12 +5,12 @@ export const spaceRouter = Router();
 
 spaceRouter.post('/', userMiddleware, createSpace);
 
+spaceRouter.delete("/element",userMiddleware, deleteElement);
+
 spaceRouter.delete('/:spaceId', userMiddleware, deleteSpace);
 
 spaceRouter.get("/all", userMiddleware, getAllSpaces);
 
-spaceRouter.post ("/element",userMiddleware, deleteElement);
-
-spaceRouter.delete("/:elementId", userMiddleware, addSpaceElement);
+spaceRouter.post("/element", userMiddleware, addSpaceElement);
 
 spaceRouter.get('/:spaceId', getSpecificSpace);

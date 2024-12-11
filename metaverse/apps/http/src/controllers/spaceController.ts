@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AddElementSchema, CreateSpaceSchema, deleteElementSchema } from "../types";
-import client from "@repo/db/client"
+import client from "@repo/db/client";
 
 export const addSpaceElement = async(req: Request, res: Response) => {
     const parsedData = AddElementSchema.safeParse(req.body);
@@ -29,6 +29,16 @@ export const addSpaceElement = async(req: Request, res: Response) => {
         })
         return;
     }
+
+    if (
+        parsedData.data.x < 0 ||
+        parsedData.data.x > space.width ||
+        parsedData.data.y < 0 ||
+        parsedData.data.y > space.height
+      ) {
+        res.status(400).json({ message: "Invalid coordinates" });
+        return;
+      }
 
     await client.spaceElements.create({
         data: {
@@ -60,7 +70,6 @@ export const createSpace = async(req: Request, res: Response) => {
         });
         return;
     }
-
     try {
         if(!payload.data.mapId) {
             const space = await client.space.create({
@@ -71,7 +80,7 @@ export const createSpace = async(req: Request, res: Response) => {
                     creatorId: req.userId 
                 }
             })
-            res.status(200).json({
+            res.status(201).json({
                 success: true,
                 message: "Space created successfully",
                 spaceId: space.id
@@ -97,7 +106,6 @@ export const createSpace = async(req: Request, res: Response) => {
             });
             return
         }
-
         let space = await client.$transaction( async ()=>{
 
             const space = await client.space.create({
@@ -110,16 +118,18 @@ export const createSpace = async(req: Request, res: Response) => {
             })
 
             await client.spaceElements.createMany({
-                data: map.mapElements.map((e)=>({
+                data: map.mapElements.map((e: any)=>({
                     spaceId: space.id,
-                    x: e.x as number,
-                    y: e.y as number,
-                    elementId: e.id
+                    x: e.x,
+                    y: e.y,
+                    elementId: e.elementId
                 }))
             })
+
             return space;
         })
-        res.status(200).json({
+
+        res.status(201).json({
             success: true,
             message: "Space created successfully",
             spaceId: space.id
@@ -135,13 +145,12 @@ export const createSpace = async(req: Request, res: Response) => {
 
 export const deleteElement = async(req: Request, res: Response) => {
     const parsedData = deleteElementSchema.safeParse(req.body)
-
     if (!parsedData.success) {
         res.status(400).json({ 
             success: false,
             message: "Validation failed" 
         })
-        return
+        return;
     }
 
     try {
@@ -154,7 +163,7 @@ export const deleteElement = async(req: Request, res: Response) => {
             }
         })
     
-    
+        
         if (!spaceElement?.space.creatorId || spaceElement.space.creatorId !== req.userId) {
             res.status(403).json({ 
                 success: false,
@@ -163,7 +172,7 @@ export const deleteElement = async(req: Request, res: Response) => {
             return
         }
     
-    
+        
         await client.spaceElements.delete({
             where: {
                 id: parsedData.data.id
@@ -191,7 +200,7 @@ export const deleteSpace = async(req: Request, res: Response) => {
                 creatorId: true
             }
         })
-    
+
         if(!space) {
             res.status(400).json({
                 success:false,
@@ -199,7 +208,7 @@ export const deleteSpace = async(req: Request, res: Response) => {
             })
             return;
         }
-    
+        
         if(space?.creatorId !== req.userId) {
             res.status(403).json({
                 success:false,
@@ -207,13 +216,21 @@ export const deleteSpace = async(req: Request, res: Response) => {
             })
             return;
         }
-    
-        await client.space.delete({
-            where: {
-                id: req.params.spaceId
-            }
+
+        await client.$transaction(async()=>{
+            await client.spaceElements.deleteMany({
+                where:{
+                    spaceId: req.params.spaceId
+                }
+            })
+
+            await client.space.delete({
+                where:{
+                    id: req.params.spaceId
+                }
+            })
         })
-    
+        
         res.status(200).json({
             success:true,
             message: "Space deleted Successfully"

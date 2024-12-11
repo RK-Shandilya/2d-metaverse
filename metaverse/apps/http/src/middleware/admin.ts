@@ -21,7 +21,7 @@ export const adminMiddleware = async (req: Request, res: Response, next: NextFun
             })
             return;
         }
-        req.userId === decoded.userId;
+        req.userId = decoded.userId;
         next();
 
     } catch (error){

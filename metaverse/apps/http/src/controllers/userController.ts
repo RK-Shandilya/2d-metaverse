@@ -4,10 +4,11 @@ import bcrypt from "bcrypt";
 import client from "@repo/db/client"
 import jwt from 'jsonwebtoken'
 import { JWT_PASSWORD } from "../config";
-
+require('dotenv').config();
 
 export const signup = async(req: Request, res: Response) => {
     const parsedData = SignupSchema.safeParse(req.body);
+    
     if(!parsedData.success) {
         res.status(400).json({
             message: "All fields are required",
@@ -56,7 +57,6 @@ export const signup = async(req: Request, res: Response) => {
 
 export const signin = async(req: Request, res: Response) => {
     const parsedData = SigninSchema.safeParse(req.body);
-    console.log(parsedData.error);
     if(!parsedData.success){
         res.status(403).json({
             message: "Invalid request body",
@@ -110,7 +110,6 @@ export const signin = async(req: Request, res: Response) => {
 
 export const updateUserMetadata = async(req: Request, res: Response) => {
     const payload = UpdateMetadataSchema.safeParse(req.body);
-    console.log(payload.success);
     if(!payload.success){
         res.status(400).json({
             success: false,
@@ -142,7 +141,8 @@ export const updateUserMetadata = async(req: Request, res: Response) => {
 }
 
 export const getDiffUserMetadata = async(req: Request, res: Response) => {
-    const userIdAsArray = JSON.parse((req.query.ids ?? "[]") as string);
+    const userIds = (req.query.ids ?? "[]") as string
+    const userIdAsArray = (userIds).slice(1, userIds?.length - 1).split(",");
     
     try {
         const metadata = await client.user.findMany({
@@ -157,14 +157,13 @@ export const getDiffUserMetadata = async(req: Request, res: Response) => {
             }
         })
 
+
         res.status(200).json({
             success: true,
-            data : {
-                avatars : metadata.map((m)=>({
-                    id: m.id,
-                    avatarId : m.avatar?.imageUrl
-                }))
-            }        
+            avatars : metadata.map((m)=>({
+                id: m.id,
+                avatarId : m.avatar?.imageUrl
+            }))
         })
     } catch (error) {
         res.status(500).json({
@@ -176,7 +175,7 @@ export const getDiffUserMetadata = async(req: Request, res: Response) => {
 
 export const getAllElement = async (req: Request, res: Response) => {
     try {
-        const elements = await client.element.findMany()
+        const elements = await client.element.findMany({})
 
         res.status(200).json({
             success: true,

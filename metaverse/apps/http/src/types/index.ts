@@ -1,13 +1,13 @@
 import z from "zod";
 
 export const SignupSchema = z.object({
-    username: z.string().email("Invalid email"),
+    username: z.string(),
     password: z.string().min(8, "Password must be at least 8 characters"),
     role: z.enum(["admin","user"])
 })
 
 export const SigninSchema = z.object({
-    username: z.string().email(" Invalid email"),
+    username: z.string(),
     password: z.string().min(8, "Password must be at least 8 characters")
 })
 
@@ -18,7 +18,7 @@ export const UpdateMetadataSchema = z.object({
 export const CreateSpaceSchema = z.object({
     name: z.string().min(3, "Name must be at least 3 characters"),
     dimensions : z.string().regex(/^[0-9]{1,4}x[0-9]{1,4}$/),
-    mapId : z.string()
+    mapId : z.string().optional()
 })
 
 export const deleteElementSchema = z.object({

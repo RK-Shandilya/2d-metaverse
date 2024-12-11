@@ -11,7 +11,7 @@ router.post('/signin', signin)
 router.post('/elements', getAllElement)
 router.get('/avatars', getAllAvatar)
 router.use('/user',userRouter);
-router.use('/space',adminRouter);
+router.use('/admin',adminRouter);
 router.use('/space',spaceRouter);
 
 export default router;

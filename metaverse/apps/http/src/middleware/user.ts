@@ -14,7 +14,7 @@ export const userMiddleware = async (req: Request, res: Response, next: NextFunc
     }
     try {
         const decoded = jwt.verify(token, JWT_PASSWORD) as {role: string, userId : string};
-        req.userId === decoded.userId;
+        req.userId = decoded.userId;
         next();
 
     } catch (error){
