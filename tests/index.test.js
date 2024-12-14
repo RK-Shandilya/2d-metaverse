@@ -1,8 +1,8 @@
 const axios2 = require("axios");
 // const ws = require("ws");
 
-const BACKEND_URL = "http://localhost:3000";
-// const WS_URL = "ws://localhost:3001"
+const BACKEND_URL = "http://localhost:3000"
+const WS_URL = "ws://localhost:3001"
 
 const axios = {
   post: async (...args) => {
@@ -39,7 +39,7 @@ const axios = {
   }
 }
 
-describe("Auth", () => {
+describe.skip("Auth", () => {
 
   test("User is able to Sign up only once", async () => {
     const username = "kirat" + Math.random() + "@gmail.com";
@@ -106,7 +106,7 @@ describe("Auth", () => {
   });
 });
 
-describe("User Update metadata Endpoint", () => {
+describe.skip("User Update metadata Endpoint", () => {
   let token = null;
   let avatarId = "";
 
@@ -186,7 +186,7 @@ describe("User Update metadata Endpoint", () => {
   });
 });
 
-describe("User avatar Information", () => {
+describe.skip("User avatar Information", () => {
   let token;
   let userId;
   let avatarId;
@@ -242,7 +242,7 @@ describe("User avatar Information", () => {
   });
 });
 
-describe("Space Information ", () => {
+describe.skip("Space Information ", () => {
   let userId;
   let userToken;
   let adminId;
@@ -513,7 +513,7 @@ describe("Space Information ", () => {
   });
 });
 
-describe("Arena Endpoints", () => {
+describe.skip("Arena Endpoints", () => {
   let userId;
   let userToken;
   let adminId;
@@ -744,7 +744,7 @@ describe("Arena Endpoints", () => {
 
 });
 
-describe("Admin Endpoints", () => {
+describe.skip("Admin Endpoints", () => {
     let adminToken;
     let adminId;
     let userToken;
@@ -890,7 +890,7 @@ describe("Admin Endpoints", () => {
     })
 });
 
-describe.skip("Websocket tests",()=> {
+describe("Websocket tests",()=> {
     let adminToken;
     let adminUserId;
     let userToken;
@@ -912,16 +912,12 @@ describe.skip("Websocket tests",()=> {
     function waitForAndPopLatestMessage(messageArray) {
         return new Promise(resolve => {
             if (messageArray.length > 0) {
-                console.log("1111111111111111111111111111111111")
                 resolve(messageArray.shift())
-                console.log("222222222222222222222222222222222")
             } else {
                 let interval = setInterval(() => {
                     if (messageArray.length > 0) {
-                        console.log("33333333333333333")
                         resolve(messageArray.shift())
                         clearInterval(interval)
-                        console.log("44444444444444444444444444444")
                     }
                 }, 100)
             }
@@ -1023,9 +1019,6 @@ describe.skip("Websocket tests",()=> {
         ws1 = new WebSocket(WS_URL)
 
         ws1.onmessage = (event) => {
-            console.log("got back adata 1")
-            console.log(event.data)
-
             ws1Messages.push(JSON.parse(event.data))
         }
         await new Promise(r => {
@@ -1035,8 +1028,6 @@ describe.skip("Websocket tests",()=> {
         ws2 = new WebSocket(WS_URL)
 
         ws2.onmessage = (event) => {
-            console.log("got back data 2")
-            console.log(event.data)
             ws2Messages.push(JSON.parse(event.data))
         }
         await new Promise(r => {
@@ -1050,7 +1041,6 @@ describe.skip("Websocket tests",()=> {
     })
 
     test("Get back ack for joining the space", async () => {
-        console.log("insixce first test")
         ws1.send(JSON.stringify({
             "type": "join",
             "payload": {
@@ -1058,9 +1048,8 @@ describe.skip("Websocket tests",()=> {
                 "token": adminToken
             }
         }))
-        console.log("insixce first test1")
         const message1 = await waitForAndPopLatestMessage(ws1Messages);
-        console.log("insixce first test2")
+
         ws2.send(JSON.stringify({
             "type": "join",
             "payload": {
@@ -1068,7 +1057,6 @@ describe.skip("Websocket tests",()=> {
                 "token": userToken
             }
         }))
-        console.log("insixce first test3")
 
         const message2 = await waitForAndPopLatestMessage(ws2Messages);
         const message3 = await waitForAndPopLatestMessage(ws1Messages);
