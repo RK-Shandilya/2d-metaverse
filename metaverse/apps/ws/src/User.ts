@@ -32,20 +32,20 @@ export class User {
           const spaceId = parsedData.payload.spaceId;
           const token = parsedData.payload.token;
           try {
-            const user = jwt.verify(token, JWT_SECRET!) as JwtPayload;
-            let updatedUser = await client.user.findUnique({
+            const userInfo = jwt.verify(token, JWT_SECRET!) as JwtPayload;
+            let user = await client.user.findUnique({
               where: {
-                id: user.id,
+                id: userInfo.id,
               },
             });
             let avatar;
-            if (updatedUser?.avatarId) {
+            if (user?.avatarId) {
               avatar = await client.avatar.findUnique({
-                where: { id: updatedUser.avatarId },
+                where: { id: user.avatarId },
               });
             }
-            this.username = user.username;
-            this.id = user.id;
+            this.username = userInfo.username;
+            this.id = userInfo.id;
             if (avatar?.imageUrl) {
               this.userAvatar = avatar.imageUrl;
             }
@@ -75,7 +75,7 @@ export class User {
             });
             RoomManager.getInstance().addUser(spaceId, this);
             this.x = Math.floor(Math.random() * space.width);
-            this.y = Math.floor(Math.random() * space.width);
+            this.y = Math.floor(Math.random() * space.height);
             this.send({
               type: "space-joined",
               payload: {
@@ -157,7 +157,7 @@ export class User {
                   userAvatar: this.userAvatar,
                 },
               });
-              RoomManager.getInstance().broadcast(
+            RoomManager.getInstance().broadcast(
                 {
                   type: "movement",
                   payload: {
