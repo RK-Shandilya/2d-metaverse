@@ -1,6 +1,6 @@
-import  client  from "@repo/db/client";
+import client  from "@repo/db/client";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { WebSocket } from "ws";
+import WebSocket  from "ws";
 import { JWT_SECRET } from "./config";
 import { RoomManager } from "./RoomManager";
 import { OutgoingMessage } from "./types";
@@ -10,7 +10,7 @@ export class User {
   private x: number;
   private y: number;
   private spaceWidth: number;
-  public id?: string;
+  public id!: string;
   public username!: string;
   public userAvatar: string | null;
 
@@ -25,27 +25,27 @@ export class User {
   }
 
   initHandlers() {
-    this.ws.on("message", async (data) => {
+    this.ws.on("message", async (data: any) => {
       const parsedData = JSON.parse(data.toString());
       switch (parsedData.type) {
         case "join":
           const spaceId = parsedData.payload.spaceId;
           const token = parsedData.payload.token;
           try {
-            const userInfo = jwt.verify(token, JWT_SECRET!) as JwtPayload;
-            let user = await client.user.findUnique({
+            const user = jwt.verify(token, JWT_SECRET!) as JwtPayload;
+            let updatedUser = await client.user.findUnique({
               where: {
-                id: userInfo.id,
+                id: user.userId,
               },
             });
             let avatar;
-            if (user?.avatarId) {
+            if (updatedUser?.avatarId) {
               avatar = await client.avatar.findUnique({
-                where: { id: user.avatarId },
+                where: { id: updatedUser.avatarId },
               });
             }
-            this.username = userInfo.username;
-            this.id = userInfo.id;
+            this.username = user.username;
+            this.id = user.userId;
             if (avatar?.imageUrl) {
               this.userAvatar = avatar.imageUrl;
             }
@@ -75,7 +75,7 @@ export class User {
             });
             RoomManager.getInstance().addUser(spaceId, this);
             this.x = Math.floor(Math.random() * space.width);
-            this.y = Math.floor(Math.random() * space.height);
+            this.y = Math.floor(Math.random() * space.width);
             this.send({
               type: "space-joined",
               payload: {
@@ -127,15 +127,15 @@ export class User {
           try {
             const moveX = parsedData.payload.x;
             const moveY = parsedData.payload.y;
-            // check for the element
-            const isElement = RoomManager.getInstance().hasElement(
+
+            const isElement = RoomManager.getInstance().hasElements(
               this.spaceId!,
               moveX * this.spaceWidth + moveY,
             );
             if (isElement) {
               throw new Error("Element found!");
             }
-            // check for the other user
+
             const index = RoomManager.getInstance()
               .rooms.get(this.spaceId!)
               ?.filter((u) => u.id !== this.id)
@@ -144,7 +144,8 @@ export class User {
             if (index !== -1) throw new Error("Other user is already present!");
             const xD = Math.abs(this.x - moveX);
             const yD = Math.abs(this.y - moveY);
-            if ((xD == 1 && yD == 0) || yD == 1 || xD == 0) {
+            
+            if ((xD == 1 && yD == 0) || (yD == 1 && xD == 0)) {
               this.x = moveX;
               this.y = moveY;
               this.send({
@@ -157,7 +158,7 @@ export class User {
                   userAvatar: this.userAvatar,
                 },
               });
-            RoomManager.getInstance().broadcast(
+              RoomManager.getInstance().broadcast(
                 {
                   type: "movement",
                   payload: {
@@ -171,15 +172,17 @@ export class User {
                 this,
                 this.spaceId!,
               );
+            } else {
+              this.send({
+                type: "movement-rejected",
+                payload: {
+                  x: this.x,
+                  y: this.y,
+                },
+              });
             }
-          } catch {
-            this.send({
-              type: "movement-rejected",
-              payload: {
-                x: this.x,
-                y: this.y,
-              },
-            });
+          } catch(e:any) {
+            console.log(e.message);
           }
           break;
         case "message":

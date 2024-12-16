@@ -1,8 +1,9 @@
-import { WebSocketServer } from "ws";
+import WebSocket, { WebSocketServer } from 'ws';
 import { User } from "./User";
+
 const wss = new WebSocketServer({ port: 3001 });
 
-wss.on("connection", (ws)=> {
+wss.on("connection", (ws: WebSocket)=> {
     console.log("Client connected");
     let user : User | undefined;
     user = new User(ws);
@@ -11,3 +12,4 @@ wss.on("connection", (ws)=> {
         user?.destroy();
     })
 })
+

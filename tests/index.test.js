@@ -39,7 +39,7 @@ const axios = {
   }
 }
 
-describe.skip("Auth", () => {
+describe("Auth", () => {
 
   test("User is able to Sign up only once", async () => {
     const username = "kirat" + Math.random() + "@gmail.com";
@@ -106,7 +106,7 @@ describe.skip("Auth", () => {
   });
 });
 
-describe.skip("User Update metadata Endpoint", () => {
+describe("User Update metadata Endpoint", () => {
   let token = null;
   let avatarId = "";
 
@@ -186,7 +186,7 @@ describe.skip("User Update metadata Endpoint", () => {
   });
 });
 
-describe.skip("User avatar Information", () => {
+describe("User avatar Information", () => {
   let token;
   let userId;
   let avatarId;
@@ -242,7 +242,7 @@ describe.skip("User avatar Information", () => {
   });
 });
 
-describe.skip("Space Information ", () => {
+describe("Space Information ", () => {
   let userId;
   let userToken;
   let adminId;
@@ -513,7 +513,7 @@ describe.skip("Space Information ", () => {
   });
 });
 
-describe.skip("Arena Endpoints", () => {
+describe("Arena Endpoints", () => {
   let userId;
   let userToken;
   let adminId;
@@ -744,7 +744,7 @@ describe.skip("Arena Endpoints", () => {
 
 });
 
-describe.skip("Admin Endpoints", () => {
+describe("Admin Endpoints", () => {
     let adminToken;
     let adminId;
     let userToken;
@@ -1016,22 +1016,24 @@ describe("Websocket tests",()=> {
     }
 
     async function setupWs() {
-        ws1 = new WebSocket(WS_URL)
-
+        ws1 = new WebSocket(WS_URL);
+        
         ws1.onmessage = (event) => {
-            ws1Messages.push(JSON.parse(event.data))
+          ws1Messages.push(JSON.parse(event.data))
         }
-        await new Promise(r => {
-            ws1.onopen = r
+
+        await new Promise((r) => {
+          ws1.onopen = r
         })
-
+        
         ws2 = new WebSocket(WS_URL)
-
+        
         ws2.onmessage = (event) => {
-            ws2Messages.push(JSON.parse(event.data))
+          ws2Messages.push(JSON.parse(event.data))
         }
+        
         await new Promise(r => {
-            ws2.onopen = r
+          ws2.onopen = r
         })
     }
 
@@ -1048,9 +1050,10 @@ describe("Websocket tests",()=> {
                 "token": adminToken
             }
         }))
+        
         const message1 = await waitForAndPopLatestMessage(ws1Messages);
 
-        ws2.send(JSON.stringify({
+        await ws2.send(JSON.stringify({
             "type": "join",
             "payload": {
                 "spaceId": spaceId,
